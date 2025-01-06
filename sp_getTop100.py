@@ -28,7 +28,7 @@ def getTop100ArtistsInGenre(genreTag = str, accessToken = str):
 
 def getTop100ArtistsByLang(lang = str, accessToken = str):
     # change limit to 100 once testing is done
-    resp = search(lang, 10, "artist", accessToken)
+    resp = search(lang, 10, "artist", 'US', accessToken)
     if resp.status_code == 200:
         print("Successful Request")
         artistList = []
@@ -48,4 +48,5 @@ def getTop100ArtistsByLang(lang = str, accessToken = str):
         return artistList
     else:
         print("Unsuccessful Request: Status Code = " + str(resp.status_code))
+        print(resp.text)
         return None

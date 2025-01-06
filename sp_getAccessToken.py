@@ -1,12 +1,7 @@
 import json
 import requests
 import base64
-from dotenv import load_dotenv
-from os import getenv
 
-load_dotenv()
-clientID = getenv("clientID")
-clientSecret = getenv("clientSecret")
 
 def getAccessToken(clientID = str, clientSecret = str):
     tokenURL = "https://accounts.spotify.com/api/token"
