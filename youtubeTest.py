@@ -115,17 +115,3 @@ or ID
     ids = getPlaylistIDFromSearch(response)
     stats = getVidStats(getPlaylistVids(ids))
     logVidData(stats, "metrics.csv", i) """
-
-response = search(youtube, genres[0], 2, "playlist")
-print(response)
-print("----------------------")
-ids = getPlaylistIDFromSearch(response)
-print(ids)
-print("----------------------")
-vids = getPlaylistVids(ids)
-print(vids)
-print("----------------------")
-stats = getVidStats(vids)
-print(stats)
-print("----------------------")
-logVidData(stats, "metrics.csv", genres[0])
