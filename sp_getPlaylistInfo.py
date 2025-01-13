@@ -4,10 +4,15 @@ import requests
 ''' will pull the playlist IDs from search results'''
 def getPlaylistIDFromSearch(searchResults):
     playlistIDList = []
-    items = searchResults.json()['playlists']['items']
-    for i in enumerate(items):
-        playlistID = i[1]['id']
-        playlistIDList.append(playlistID)
+    items = searchResults.get('playlists', {}).get('items')
+    for i in items:
+        print(type(i))
+        print("i in get Playlist ID from Search == ")
+        print(i)
+        if not i['id']:
+            print("No playlist ID found")
+        else:
+            playlistIDList.append(i['id'])
     return playlistIDList
 
 
@@ -33,10 +38,9 @@ def getPlaylistItemsPopularity(playlistID = str, market = str, accessToken = str
             count += 1
         
         popularity = ceil(sumOfPop / count) # actual avg calc 
-        print("Average Popularity for playlist = " + str(popularity))
         return popularity
     else: #if not successful
-        print(f"Unsuccessful Request: status_code = " + str(resp.status_code) + " and resp.text = " + resp.text)
+        print(f"Unsuccessful Request to get playlist items: status_code = " + str(resp.status_code) + " and resp.text = " + resp.text)
         return None
 
 
@@ -48,11 +52,10 @@ def getFollowers(accessToken = str, playListID = str):
     }
     resp = requests.get(url, headers = headers)
     if resp.status_code == 200:
-        print("Successful Request")
+        print("Successful Request to Get Followers")
         playlistInfo = resp.json()
         followers = playlistInfo['followers']['total']
-        print("Followers = " + str(followers))
         return int(followers)
     else:
-        print(f"Unsuccessful Request: status code {resp.status_code}. Resp.text = {resp.text}")
+        print(f"Unsuccessful Request to get Followers: status code {resp.status_code}. Resp.text = {resp.text}")
         return None
