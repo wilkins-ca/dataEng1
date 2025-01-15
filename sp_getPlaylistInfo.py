@@ -4,12 +4,9 @@ import requests
 ''' will pull the playlist IDs from search results'''
 def getPlaylistIDFromSearch(searchResults):
     playlistIDList = []
-    items = searchResults.get('playlists', {}).get('items')
+    items = searchResults['playlists']['items']
     for i in items:
-        print(type(i))
-        print("i in get Playlist ID from Search == ")
-        print(i)
-        if not i['id']:
+        if not i:
             print("No playlist ID found")
         else:
             playlistIDList.append(i['id'])
@@ -33,9 +30,13 @@ def getPlaylistItemsPopularity(playlistID = str, market = str, accessToken = str
         tracks = resp.json()['items'] # pull bulk track info
         sumOfPop = 0
         count = 0
-        for i in enumerate(tracks): # begin calculating avg 
-            sumOfPop += i[1]['track']['popularity']
-            count += 1
+        for i in tracks: # begin calculating avg
+            if i['track'] is not None:
+                sumOfPop += i['track']['popularity']
+                count += 1
+            else:
+                print("Null track. Continuing")
+                continue
         
         popularity = ceil(sumOfPop / count) # actual avg calc 
         return popularity

@@ -11,6 +11,7 @@ def search(searchstr = str, resultsLim = int, searchType = str, country = str, a
     query = f"?q={searchstr}&type={searchType}&market={country}&limit={resultsLim}"
     searchResponse = requests.get(searchListURL + query, headers=headers)
     if searchResponse.status_code == 200:
+        print(f"Successful Search, status code {searchResponse.status_code}")
         try:
             return searchResponse.json()
         except ValueError:
