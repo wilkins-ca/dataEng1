@@ -7,7 +7,7 @@ def getPlaylistIDFromSearch(searchResults):
     items = searchResults['playlists']['items']
     for i in items:
         if not i:
-            print("No playlist ID found")
+            print(f"No playlist ID found")
         else:
             playlistIDList.append(i['id'])
     return playlistIDList
@@ -38,7 +38,7 @@ def getPlaylistItemsPopularity(playlistID = str, market = str, accessToken = str
                 print("Null track. Continuing")
                 continue
         
-        popularity = ceil(sumOfPop / count) # actual avg calc 
+        popularity = ceil(sumOfPop / count) # actual avg calc
         return popularity
     else: #if not successful
         print(f"Unsuccessful Request to get playlist items: status_code = " + str(resp.status_code) + " and resp.text = " + resp.text)

@@ -1,3 +1,4 @@
+from numpy import average
 from sp_getAccessToken import getAccessToken
 import sp_getPlaylistInfo as pInfo
 import sp_getTrackInfo as tInfo
@@ -23,7 +24,7 @@ searchTerms = [
     'German', 
     'American',
     'spanish||espanol||hispanic', 
-    "baladi",
+    "Egyptian",
     "In English",
     "Reggaeton",
     "Salsa",
@@ -47,8 +48,10 @@ searchTerms = [
     "Middle Eastern",
     "Nordic",
     "Afrobeat",
-    "karnatic"
+    "karnatic",
+    "celtic"
 ]
+
 
 
 # THIS SECTION IS LOOKING AT AVERAGE FOLLOWERS OF SEARCHTERM-SPECIFIC PLAYLISTS AND THEIR CONTAINED TRACKS' AVERAGE POPULARITY
@@ -94,17 +97,45 @@ data.plot.bar(x='Search Term', y='Avg Followers')
 plt.show() """
 
 
-response = search(searchTerms[0], 1, "playlist", "US", accessToken)
-playlistIDList = pInfo.getPlaylistIDFromSearch(response)
-popularity = pInfo.getPlaylistItemsPopularity(playlistID=playlistIDList[0], market='US', accessToken=accessToken)
-print("Popularity = " + str(popularity))
-tracks = tInfo.getPlaylistItems(playlistId=playlistIDList[0], accessToken=accessToken)
-# for songname, artistname in tracks['trackname'], tracks['artistname']:
-for songid in tracks['trackid']:
-    idx = tracks['trackid'].index(songid)
-    songname = tracks['trackname'][idx]
-    artistname = tracks['artistname'][idx]
-    print(tInfo.getLyricsLanguage(songname, artistname))
+for i in searchTerms[0:1]:
+    response = search(i, 1, "playlist", "US", accessToken)
+    playlistIDList = pInfo.getPlaylistIDFromSearch(response)
+    for playlist in playlistIDList:
+        popularity = pInfo.getPlaylistItemsPopularity(playlistID=playlist, market='US', accessToken=accessToken)
+        tracks = tInfo.getPlaylistItems(playlistId=playlist, accessToken=accessToken)
+        df = pd.DataFrame(tracks)
+        df.to_csv("trackInfo.csv")
 
 
-tInfo.getTrackArtistGenre(tracks['artistid'][0:5], accessToken)
+
+""" popPerTerm = {"SearchTermUsed": [], "avgPopularity": []}
+for j in searchTerms: #start off with just one search term until things look good
+    print(f"Current Search Term is {j}")
+    limit = 50 # we want the top 100 artists in the US
+    topArtists = {"name": [], "id": [], "popularity": [], "SearchTermUsed": []}
+    response1 = search(j, limit, "artist", accessToken=accessToken) #search for artists
+    for artist in response1['artists']['items']:
+        if artist['id'] not in enumerate(topArtists["id"]): #if the artist id in search results in not in the artist ids in our established topArtists 
+            #append info to the topartists dict
+                topArtists["name"].append(artist['name'])
+                topArtists["id"].append(artist['id'])
+                topArtists["popularity"].append(artist['popularity'])
+                topArtists["SearchTermUsed"].append(j)
+
+        if len(topArtists) >= limit: #if we've reached the limit, exit the loop
+            break
+    avgPop = average(topArtists["popularity"]) #compute average popularity between 50 artists returned from the search term
+    popPerTerm["avgPopularity"].append(avgPop)
+    popPerTerm["SearchTermUsed"].append(j)
+
+topArtists["popularity"] = sorted(topArtists["popularity"], reverse = True) #sort by popularity in descending order for the whole of the topArtists list
+
+popInfo = pd.DataFrame(popPerTerm)
+print(popInfo)
+fig, axes = plt.subplots(figsize=(8, 10))
+axes.barh(popInfo["SearchTermUsed"], popInfo["avgPopularity"], color="skyblue")
+# axes.tick_params(axis='x', which="major", pad=10, labelsize=9, rotation=45)
+axes.set_ylabel("Search Term Used\nNote: it is recognized that some of the artist\nresults may not be directly related to the search term by language correlation")
+axes.set_xlabel("Avg Popularity Rank across 50 artists")
+plt.tight_layout()
+plt.show() """
