@@ -1,8 +1,9 @@
 from numpy import average
-from sp_getAccessToken import getAccessToken
+from sp_getAccessToken import getAccessToken, isTokenValid
 import sp_getPlaylistInfo as pInfo
 import sp_getTrackInfo as tInfo
 from sp_search import search
+from sp_checkValidToken import checkTokenValidity
 from dotenv import load_dotenv
 from os import getenv
 import pandas as pd
@@ -54,7 +55,7 @@ searchTerms = [
 
 
 
-# THIS SECTION IS LOOKING AT AVERAGE FOLLOWERS OF SEARCHTERM-SPECIFIC PLAYLISTS AND THEIR CONTAINED TRACKS' AVERAGE POPULARITY
+# THIS SECTION IS LOOKING AT AVERAGE FOLLOWERS OF SEARCHTERM-SPECIFIC PLAYLISTS
 """ compiledDict = {'Search Term': [], 'Avg Followers': [], 'Avg Playlist Popularity': []}
 
 for i in range(0, len(searchTerms)):
@@ -97,18 +98,27 @@ data.plot.bar(x='Search Term', y='Avg Followers')
 plt.show() """
 
 
+
+""" # THIS SECTION LOOKS AT THE AVERAGE POPULARITY OF TRACKS IN VARIOUS LANGUAGES, PULLED FROM PLAYLISTS USING DIFFERENT GENRE SEARCH TERMS 
 for i in searchTerms[0:1]:
-    response = search(i, 1, "playlist", "US", accessToken)
-    playlistIDList = pInfo.getPlaylistIDFromSearch(response)
-    for playlist in playlistIDList:
+    if not isTokenValid(): #due to waiting 90 secs between each loop in getPlaylistItems, need to refresh access token after a while
+        accessToken = getAccessToken(clientID=clientID, clientSecret=clientSecret) #get access token if the current is not valid anymore
+
+    response = search(i, 10, "playlist", "US", accessToken) # get playlists from search term i via api call
+    playlistIDList = pInfo.getPlaylistIDFromSearch(response) # get playlist id list
+    for playlist in playlistIDList: #loop over playlists to get metadata for songs within each playlist
         popularity = pInfo.getPlaylistItemsPopularity(playlistID=playlist, market='US', accessToken=accessToken)
+        '''
+        The variable tracks will have the following form: {"trackid": [], "trackname": [], "popularity": [], "artistid": [], "artistname": [], "language": []}
+            - in the for loop of getPlaylistItems (which iterates over the tracks in a given playlist), we wait 90 sec to get around request rate limit of Genius api
+        '''
         tracks = tInfo.getPlaylistItems(playlistId=playlist, accessToken=accessToken)
-        df = pd.DataFrame(tracks)
-        df.to_csv("trackInfo.csv")
+        df = pd.DataFrame(tracks) # cast tracks as a dataframe in prep to write the df to a csv
+        df.to_csv("trackInfo.csv") """
 
 
 
-""" popPerTerm = {"SearchTermUsed": [], "avgPopularity": []}
+popPerTerm = {"SearchTermUsed": [], "avgPopularity": []}
 for j in searchTerms: #start off with just one search term until things look good
     print(f"Current Search Term is {j}")
     limit = 50 # we want the top 100 artists in the US
@@ -138,4 +148,4 @@ axes.barh(popInfo["SearchTermUsed"], popInfo["avgPopularity"], color="skyblue")
 axes.set_ylabel("Search Term Used\nNote: it is recognized that some of the artist\nresults may not be directly related to the search term by language correlation")
 axes.set_xlabel("Avg Popularity Rank across 50 artists")
 plt.tight_layout()
-plt.show() """
+plt.show()

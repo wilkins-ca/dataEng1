@@ -78,7 +78,7 @@ def getPlaylistItems(playlistId = str, accessToken = str):
                 trackInfoDict["artistname"].append(i['track']['artists'][0]['name'])
                 trackInfoDict["language"].append(getLyricsLanguage(i['track']['name'], i['track']['artists'][0]['name']))
                 
-                # time.sleep(90) # sleep for 90 secs to get around Genius rate limit
+                time.sleep(90) # sleep for 90 secs to get around Genius rate limit
             else:
                 print("Null track, continuing") #go to next iteration of the loop if track is not there
                 continue
