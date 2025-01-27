@@ -3,7 +3,6 @@ from sp_getAccessToken import getAccessToken, isTokenValid
 import sp_getPlaylistInfo as pInfo
 import sp_getTrackInfo as tInfo
 from sp_search import search
-from sp_checkValidToken import checkTokenValidity
 from dotenv import load_dotenv
 from os import getenv
 import pandas as pd
@@ -117,7 +116,7 @@ for i in searchTerms[0:1]:
         df.to_csv("trackInfo.csv") """
 
 
-
+# THIS SECTION LOOKS AT THE POPULARITY OF TOP 50 ARTISTS ASSOCIATED WITH DIFFERENT LANGUAGE SEARCH TERMS IN THE US AND THEIR POPULARITY
 popPerTerm = {"SearchTermUsed": [], "avgPopularity": []}
 for j in searchTerms: #start off with just one search term until things look good
     print(f"Current Search Term is {j}")
